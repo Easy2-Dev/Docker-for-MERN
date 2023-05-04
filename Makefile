@@ -2,7 +2,8 @@ up-f:
 	docker compose up --build --remove-orphans
 
 up:
-	docker compose up -d --build --remove-orphans
+	[ -d ./volumes ] || mkdir -p volumes/mysql \
+	&& docker compose up -d --build --remove-orphans 
 
 down:
 	docker compose down --remove-orphans
