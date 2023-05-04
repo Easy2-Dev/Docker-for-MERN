@@ -1,3 +1,4 @@
 bump-version.sh
 **/*.env
 !**/temp*.env
+volumes
