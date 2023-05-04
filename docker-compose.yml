@@ -1,12 +1,52 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  app:
-    build: .
-    image: app:react
+  client:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+    image: $CLIENT_APP_NAME
+    restart: always
     ports:
-      - "3000:3000"
+      - $CLIENT_APP_PORT:3000
+    working_dir: /client
     volumes:
-      - ./src:/app
-    container_name: react-app
+      - $CLIENT_APP_VOLUMES:/client
+    container_name: client
     command: npm start
+
+  api:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+    image: $SERVER_APP_NAME
+    restart: always
+    ports:
+      - $SERVER_APP_PORT:5000
+    working_dir: /api
+    volumes:
+      - $SERVER_APP_VOLUMES:/api
+    container_name: api
+    command: npm run dev
+
+  mongodb:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+    image: db
+    ports:
+      - $DB_PORT:27017
+    env_file:
+      - ./envs/mongo.env
+    volumes:
+      - ./volumes/mongo:/data/db
+    container_name: mongodb
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - $DB_MANAGER_PORT:8081
+    env_file:
+      - ./envs/mongo-express.env
+    container_name: mongodb_manager
